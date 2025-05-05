@@ -250,14 +250,16 @@ jobs:
         if: ${{ !startsWith(matrix.rid, 'win-') }}
         run: chmod +x ${{ matrix.app }}/${{ matrix.asset }}
 
-      - name: Pack Gui to .app bundle
+      - name: Create .app bundle (macOS Gui)
         if: matrix.app == 'DiscordChatExporter.Gui'
         run: |
           # Create the necessary directory structure for the .app bundle
           mkdir -p ${{ matrix.asset }}.app/Contents/MacOS
           mkdir ${{ matrix.asset }}.app/Contents/Resources
           mv ${{ matrix.app }}/Info.plist ${{ matrix.asset }}.app/Contents/
+          if [ -f "${{ matrix.app }}/DiscordChatExporter.icns" ]; then
           mv ${{ matrix.app }}/DiscordChatExporter.icns ${{ matrix.asset }}.app/Contents/Resources/
+          fi
 
           mv ${{ matrix.app }}/* ${{ matrix.asset }}.app/Contents/MacOS/
           mv ${{ matrix.asset }}.app  ${{ matrix.app }}/${{ matrix.asset }}.app
