@@ -180,14 +180,15 @@ jobs:
           - DiscordChatExporter.Cli
           - DiscordChatExporter.Gui
         rid:
-          - win-arm64
-          - win-x86
-          - win-x64
-          - linux-arm
-          - linux-arm64
-          - linux-musl-x64
-          - linux-x64
-          - macos-universal
+          # - win-arm64
+          # - win-x86
+          # - win-x64
+          # - linux-arm
+          # - linux-arm64
+          # - linux-musl-x64
+          # - linux-x64
+          - osx-arm64
+          - osx-x64
         include:
           - app: DiscordChatExporter.Cli
             asset: DiscordChatExporter.Cli
