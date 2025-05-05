@@ -156,7 +156,7 @@ jobs:
           mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 
           # Move icon to the .app/Resources directory
-          mv "favicon.icns" "$RESOURCES_DIR/Contents/"
+          # mv "favicon.icns" "$RESOURCES_DIR/Contents/"
 
           # Create the Information Property List file
           cat > $APP_DIR/Info.plist << EOF
