@@ -253,16 +253,24 @@ jobs:
       - name: Create .app bundle (macOS Gui)
         if: matrix.app == 'DiscordChatExporter.Gui'
         run: |
-          # Create the necessary directory structure for the .app bundle
-          mkdir -p ${{ matrix.asset }}.app/Contents/MacOS
-          mkdir ${{ matrix.asset }}.app/Contents/Resources
-          mv ${{ matrix.app }}/Info.plist ${{ matrix.asset }}.app/Contents/
-          if [ -f "${{ matrix.app }}/DiscordChatExporter.icns" ]; then
-          mv ${{ matrix.app }}/DiscordChatExporter.icns ${{ matrix.asset }}.app/Contents/Resources/
-          fi
+          STAGING_DIR="app-bundle"
+          APP_NAME="${{ matrix.asset }}.app"
+          APP_DIR="$STAGING_DIR/$APP_NAME"
+          MACOS_DIR="$APP_DIR/Contents/MacOS"
+          RESOURCES_DIR="$APP_DIR/Contents/Resources"
 
-          mv ${{ matrix.app }}/* ${{ matrix.asset }}.app/Contents/MacOS/
-          mv ${{ matrix.asset }}.app  ${{ matrix.app }}/${{ matrix.asset }}.app
+          # Create directory structure outside the source dir
+          mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
+
+          # Move Info.plist and icon to specific locations
+          mv "${{ matrix.app }}/Info.plist" "$APP_DIR/Contents/"
+          mv "${{ matrix.app }}/DiscordChatExporter.icns" "$RESOURCES_DIR/"
+
+          # Move all other files to the MacOS directory
+          mv "${{ matrix.app }}/*" "$MACOS_DIR/"
+
+          # Move final .app bundle to the source directory
+          mv "$APP_DIR" "${{ matrix.app }}/$APP_NAME"
 
       - name: Create package
         # Change into the artifacts directory to avoid including the directory itself in the zip archive
