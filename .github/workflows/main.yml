@@ -96,13 +96,14 @@ jobs:
           - DiscordChatExporter.Cli
           - DiscordChatExporter.Gui
         rid:
-          - win-arm64
-          - win-x86
-          - win-x64
-          - linux-arm
-          - linux-arm64
-          - linux-musl-x64
-          - linux-x64
+          # - win-arm64
+          # - win-x86
+          # - win-x64
+          # - linux-arm
+          # - linux-arm64
+          # - linux-musl-x64
+          # - linux-x64
+          # The two macOS builds will be used to create a universal binary in the pack-macos job
           - osx-arm64
           - osx-x64
         include:
@@ -150,7 +151,7 @@ jobs:
 
     needs:
       - format
-      - test
+      # - test
       - pack
 
     runs-on: ubuntu-latest
@@ -186,8 +187,7 @@ jobs:
           - linux-arm64
           - linux-musl-x64
           - linux-x64
-          - osx-arm64
-          - osx-x64
+          - macos-universal
         include:
           - app: DiscordChatExporter.Cli
             asset: DiscordChatExporter.Cli
@@ -212,6 +212,51 @@ jobs:
       - name: Set permissions
         if: ${{ !startsWith(matrix.rid, 'win-') }}
         run: chmod +x ${{ matrix.app }}/${{ matrix.asset }}
+
+      - name: Pack Gui to .app bundle
+        if: matrix.app == 'DiscordChatExporter.Gui'
+        run: |
+          # Create the necessary directory structure for the .app bundle
+          mkdir -p ${{ matrix.asset }}.app/Contents/MacOS
+          mkdir -p ${{ matrix.asset }}.app/Contents/Resources
+
+          mv ${{ matrix.app }}/* ${{ matrix.asset }}.app/Contents/MacOS/
+
+          # Create Info.plist file
+          cat > ${{ matrix.asset }}.app/Contents/Info.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>DiscordChatExporter</string>
+              <key>NSHumanReadableCopyright</key>
+              <string>Copyright (c) Oleksii Holub</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.tyrrrz.${{ matrix.asset }}</string>
+              <key>CFBundleName</key>
+              <string>${{ matrix.asset }}</string>
+              <key>CFBundleDisplayName</key>
+              <string>DiscordChatExporter</string>
+              <key>CFBundleVersion</key>
+              <string>${{ github.ref_type == 'tag' }}</string>
+              <key>CFBundleShortVersionString</key>
+              <string>${{ github.ref_type == 'tag' }}</string>
+              <key>NSHighResolutionCapable</key>
+              <true/>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+          </dict>
+          </plist>
+          EOF
+
+          mv ${{ matrix.asset }}.app  ${{ matrix.app }}/${{ matrix.asset }}
+
+          # TODO: convert icon
+          # Copy the icon file if it exists
+          if [ -f "favicon.icns" ]; then
+            cp favicon.icns ${{ matrix.app }}/bin/publish/${{ matrix.asset }}.app/Contents/Resources/
+          fi
 
       - name: Create package
         # Change into the artifacts directory to avoid including the directory itself in the zip archive
