@@ -266,6 +266,10 @@ jobs:
           mv "${{ matrix.app }}/Info.plist" "$APP_DIR/Contents/"
           mv "${{ matrix.app }}/DiscordChatExporter.icns" "$RESOURCES_DIR/"
 
+          ls -la "$APP_DIR/Contents/"
+          ls -la "$RESOURCES_DIR/"
+          ls ${{ matrix.app}}
+
           # Move all other files to the MacOS directory
           mv "${{ matrix.app }}/*" "$MACOS_DIR/"
 
