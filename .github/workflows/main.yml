@@ -270,8 +270,8 @@ jobs:
           ls -la "$RESOURCES_DIR/"
           ls ${{ matrix.app}}
 
-          # Move all other files to the MacOS directory
-          mv "${{ matrix.app }}/*" "$MACOS_DIR/"
+          # Move all remaining files to the MacOS directory
+          find "${{ matrix.app }}" -maxdepth 1 -mindepth 1 -exec mv "{}" "$MACOS_DIR/" \;
 
           # Move final .app bundle to the source directory
           mv "$APP_DIR" "${{ matrix.app }}/$APP_NAME"
