@@ -47,8 +47,6 @@ New-Item -ItemType Directory -Path $resourcesDir -Force
 Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
 
 # Generate version string 
-# If github.ref_type is a tag, use the tag name as the version string
-# Otherwise, use a placeholder version string for CI builds
 $versionString = if ($GitHubRefType -eq "tag") { $GitHubRefName } else { "999.9.9-ci" }
 
 # Generate Info.plist metadata file with app information
