@@ -88,4 +88,4 @@ $plistContent = @"
 Set-Content -Path (Join-Path $contentsDir "Info.plist") -Value $plistContent
 
 # Move the final .app bundle into the publish directory for upload
-Move-Item -Path $appDir -Destination (Join-Path $publishDir $appName) -Force
+Move-Item -Path $appDir -Destination $PublishDir -Force
