@@ -144,56 +144,18 @@ jobs:
 
       - name: Generate macOS .app bundle resources
         if: matrix.app == 'DiscordChatExporter.Gui' && startsWith(matrix.rid, 'osx-')
+        shell: pwsh
         run: |
-          STAGING_DIR="app-bundle-staging"
-          APP_NAME="${{ matrix.asset }}.app"
-          APP_DIR="$STAGING_DIR/$APP_NAME"
-          CONTENTS_DIR="$APP_DIR/Contents"
-          MACOS_DIR="$CONTENTS_DIR/MacOS"
-          RESOURCES_DIR="$CONTENTS_DIR/Resources"
-          PUBLISH_DIR="${{ matrix.app }}/bin/publish"
-
-          # Create directory structure for macOS app bundle
-          mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
-
-          # Move icon to the .app/Resources directory
-          mv "favicon.icns" "$RESOURCES_DIR/${{ matrix.asset }}.icns"
-
-          # Create the Information Property List file
-          cat > $CONTENTS_DIR/Info.plist << EOF
-            <?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-              <dict>
-                <key>CFBundleExecutable</key>
-                <string>DiscordChatExporter</string>
-                <key>NSHumanReadableCopyright</key>
-                <string>© Oleksii Holub</string>
-                <key>CFBundleIdentifier</key>
-                <string>com.Tyrrrz.${{ matrix.asset }}</string>
-                <key>CFBundleName</key>
-                <string>${{ matrix.asset }}</string>
-                <key>CFBundleDisplayName</key>
-                <string>${{ matrix.asset }}</string>
-                <key>CFBundleSpokenName</key>
-                <string>Discord Chat Exporter</string>
-                <key>CFBundleVersion</key>
-                <string>${{ github.sha }}</string>
-                <key>CFBundleShortVersionString</key>
-                <string>${{ github.ref_type == 'tag' && github.ref_name || '999.9.9-ci' }}</string>
-                <key>NSHighResolutionCapable</key>
-                <true/>
-                <key>CFBundlePackageType</key>
-                <string>APPL</string>
-              </dict>
-            </plist>
-          EOF
-
-          # Move all remaining files to the MacOS directory
-          find "$PUBLISH_DIR" -maxdepth 1 -mindepth 1 -exec mv "{}" "$MACOS_DIR/" \;
-
-          # Move final .app bundle to the publish directory
-          mv "$APP_DIR" "$PUBLISH_DIR"
+          ./macos-bundle.ps1 `
+            -AssetName "${{ matrix.asset }}" `
+            -AppPath "${{ matrix.app }}" `
+            -GitSha "${{ github.sha }}" `
+            -RefType "${{ github.ref_type }}" `
+            -RefName "${{ github.ref_name }}" `
+            -IconPath "favicon.icns" `
+            -Copyright "© Oleksii Holub"
+            -SpokenName "Discord Chat Exporter" `
+            -BundleIdentifier "com.Tyrrrz.${{ matrix.app }}" `
 
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
