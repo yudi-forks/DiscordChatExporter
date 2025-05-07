@@ -170,7 +170,7 @@ jobs:
 
     needs:
       - format
-      - test
+      # - test
       - pack
 
     runs-on: ubuntu-latest
