@@ -4,6 +4,12 @@ param(
     
     [Parameter(Mandatory=$true)]
     [string]$MatrixAppPath,
+
+    [Parameter(Mandatory=$true)]
+    [string]$PublishDir,
+
+    [Parameter(Mandatory=$true)]
+    [string]$Version,
     
     [Parameter(Mandatory=$true)]
     [string]$GitHubSha,
@@ -15,21 +21,18 @@ param(
     [string]$GitHubRefName,
 
     [Parameter(Mandatory=$true)]
-    [string]$IconPath,
-
-    [Parameter(Mandatory=$true)]
-    [string]$Copyright,
+    [string]$BundleIdentifier,
 
     [Parameter(Mandatory=$true)]
     [string]$SpokenName,
 
     [Parameter(Mandatory=$true)]
-    [string]$BundleIdentifier,
-    
-    [Parameter(Mandatory=$true)]
-    [string]$publishDir,
+    [string]$Copyright,
 
-    [string]$StagingDir = "app-bundle-staging"
+    [Parameter(Mandatory=$true)]
+    [string]$IconPath,
+
+    [string]$StagingDir = "bundle-macos-app-staging"
 )
 
 # Setup paths
@@ -45,9 +48,6 @@ New-Item -ItemType Directory -Path $resourcesDir -Force
 
 # Copy icon into the .app's Resources folder
 Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
-
-# Generate version string 
-$versionString = if ($GitHubRefType -eq "tag") { $GitHubRefName } else { "999.9.9-ci" }
 
 # Generate Info.plist metadata file with app information
 $plistContent = @"
@@ -74,7 +74,7 @@ $plistContent = @"
     <key>CFBundleVersion</key>
     <string>$GitHubSha</string>
     <key>CFBundleShortVersionString</key>
-    <string>$versionString</string>
+    <string>$Version</string>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>CFBundlePackageType</key>
