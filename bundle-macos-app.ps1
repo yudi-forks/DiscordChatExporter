@@ -1,18 +1,18 @@
 param(
     [Parameter(Mandatory=$true)]
-    [string]$AssetName,
+    [string]$MatrixAssetName,
     
     [Parameter(Mandatory=$true)]
-    [string]$AppPath,
+    [string]$MatrixAppPath,
     
     [Parameter(Mandatory=$true)]
-    [string]$GitSha,
+    [string]$GitHubSha,
     
     [Parameter(Mandatory=$true)]
-    [string]$RefType,
+    [string]$GitHubRefType,
     
     [Parameter(Mandatory=$true)]
-    [string]$RefName,
+    [string]$GitHubRefName,
     
     [string]$StagingDir = "app-bundle-staging",
     
@@ -30,22 +30,22 @@ param(
 )
 
 # Setup paths
-$appName = "$AssetName.app"
+$appName = "$MatrixAssetName.app"
 $appDir = Join-Path $StagingDir $appName
 $contentsDir = Join-Path $appDir "Contents"
 $macosDir = Join-Path $contentsDir "MacOS"
 $resourcesDir = Join-Path $contentsDir "Resources"
-$publishDir = Join-Path $AppPath "bin/publish"
+$publishDir = Join-Path $MatrixAppPath "bin/publish"
 
 # Create the macOS .app bundle directory structure
-New-Item -ItemType Directory -Path $macosDir -Force | Out-Null
-New-Item -ItemType Directory -Path $resourcesDir -Force | Out-Null
+New-Item -ItemType Directory -Path $macosDir -Force
+New-Item -ItemType Directory -Path $resourcesDir -Force
 
 # Copy icon into the .app's Resources folder
 Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
 
 # Generate version string based on ref type
-$versionString = if ($RefType -eq "tag") { $RefName } else { "999.9.9-ci" }
+$versionString = if ($GitHubRefType -eq "tag") { $GitHubRefName } else { "999.9.9-ci" }
 
 # Generate Info.plist metadata file with app information
 $plistContent = @"
@@ -54,11 +54,11 @@ $plistContent = @"
 <plist version="1.0">
   <dict>
     <key>CFBundleDisplayName</key>
-    <string>$AssetName</string>
+    <string>$MatrixAssetName</string>
     <key>CFBundleName</key>
-    <string>$AssetName</string>
+    <string>$MatrixAssetName</string>
     <key>CFBundleExecutable</key>
-    <string>$AssetName</string>
+    <string>$MatrixAssetName</string>
     <key>NSHumanReadableCopyright</key>
     <string>$Copyright</string>
     <key>CFBundleIdentifier</key>
@@ -70,7 +70,7 @@ $plistContent = @"
     <key>CFBundleIconName</key>
     <string>AppIcon</string>
     <key>CFBundleVersion</key>
-    <string>$GitSha</string>
+    <string>$GitHubSha</string>
     <key>CFBundleShortVersionString</key>
     <string>$versionString</string>
     <key>NSHighResolutionCapable</key>

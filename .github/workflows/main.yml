@@ -146,16 +146,16 @@ jobs:
         if: matrix.app == 'DiscordChatExporter.Gui' && startsWith(matrix.rid, 'osx-')
         shell: pwsh
         run: >
-          ./macos-bundle.ps1
-          -AssetName "${{ matrix.asset }}"
-          -AppPath "${{ matrix.app }}"
-          -GitSha "${{ github.sha }}"
-          -RefType "${{ github.ref_type }}"
-          -RefName "${{ github.ref_name }}"
-          -IconPath "favicon.icns"
-          -Copyright "© Oleksii Holub"
+          ./bundle-macos-app.ps1
+          -MatrixAssetName "${{ matrix.asset }}"
+          -MatrixAppPath "${{ matrix.app }}"
+          -GitHubSha "${{ github.sha }}"
+          -GitHubRefType "${{ github.ref_type }}"
+          -GitHubRefName "${{ github.ref_name }}"
           -SpokenName "Discord Chat Exporter"
+          -Copyright "© Oleksii Holub"
           -BundleIdentifier "com.Tyrrrz.${{ matrix.asset }}"
+          -IconPath "favicon.icns"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -169,7 +169,7 @@ jobs:
 
     needs:
       - format
-      # - test
+      - test
       - pack
 
     runs-on: ubuntu-latest
