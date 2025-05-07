@@ -13,9 +13,7 @@ param(
     
     [Parameter(Mandatory=$true)]
     [string]$GitHubRefName,
-    
-    [string]$StagingDir = "app-bundle-staging",
-    
+
     [Parameter(Mandatory=$true)]
     [string]$IconPath,
 
@@ -27,6 +25,11 @@ param(
 
     [Parameter(Mandatory=$true)]
     [string]$BundleIdentifier
+    
+    [Parameter(Mandatory=$true)]
+    [string]$publishDir
+
+    [string]$StagingDir = "app-bundle-staging",
 )
 
 # Setup paths
@@ -35,7 +38,6 @@ $appDir = Join-Path $StagingDir $appName
 $contentsDir = Join-Path $appDir "Contents"
 $macosDir = Join-Path $contentsDir "MacOS"
 $resourcesDir = Join-Path $contentsDir "Resources"
-$publishDir = Join-Path $MatrixAppPath "bin/publish"
 
 # Create the macOS .app bundle directory structure
 New-Item -ItemType Directory -Path $macosDir -Force
@@ -44,7 +46,9 @@ New-Item -ItemType Directory -Path $resourcesDir -Force
 # Copy icon into the .app's Resources folder
 Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
 
-# Generate version string based on ref type
+# Generate version string 
+# If github.ref_type is a tag, use the tag name as the version string
+# Otherwise, use a placeholder version string for CI builds
 $versionString = if ($GitHubRefType -eq "tag") { $GitHubRefName } else { "999.9.9-ci" }
 
 # Generate Info.plist metadata file with app information

@@ -149,12 +149,13 @@ jobs:
           ./bundle-macos-app.ps1
           -MatrixAssetName "${{ matrix.asset }}"
           -MatrixAppPath "${{ matrix.app }}"
+          -PublishDir "${{ matrix.app }}/bin/publish/"
           -GitHubSha "${{ github.sha }}"
           -GitHubRefType "${{ github.ref_type }}"
           -GitHubRefName "${{ github.ref_name }}"
+          -BundleIdentifier "com.Tyrrrz.${{ matrix.asset }}"
           -SpokenName "Discord Chat Exporter"
           -Copyright "© Oleksii Holub"
-          -BundleIdentifier "com.Tyrrrz.${{ matrix.asset }}"
           -IconPath "favicon.icns"
 
       - name: Upload artifacts
