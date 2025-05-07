@@ -230,11 +230,6 @@ jobs:
         if: ${{ !startsWith(matrix.rid, 'win-') && !(startsWith(matrix.rid, 'osx-') && matrix.app == 'DiscordChatExporter.Gui') }}
         run: chmod +x ${{ matrix.app }}/${{ matrix.asset }}
 
-      - name: Set permissions for macOS .app bundle
-        if: ${{ startsWith(matrix.rid, 'osx-') && matrix.app == 'DiscordChatExporter.Gui' }}
-        run: >
-          chmod +x ${{ matrix.app }}/${{ matrix.asset }}.app/Contents/MacOS/${{ matrix.asset }}
-
       - name: Create package
         # Change into the artifacts directory to avoid including the directory itself in the zip archive
         working-directory: ${{ matrix.app }}/
