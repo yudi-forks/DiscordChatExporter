@@ -47,9 +47,11 @@ New-Item -ItemType Directory -Path $resourcesDir -Force
 
 # Copy icon into the .app's Resources folder
 Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
+Move-Item -Path $PublishDir -Destination $macosDir -Force
 
 # Copy all built application files into the .app's MacOS directory
 Move-Item -Path $publishDir -Destination $macosDir -Force
+Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
 
 # Generate Info.plist metadata file with app information
 $plistContent = @"
@@ -88,4 +90,4 @@ $plistContent = @"
 Set-Content -Path (Join-Path $contentsDir "Info.plist") -Value $plistContent
 
 # Move the final .app bundle into the publish directory for upload
-Move-Item -Path $appDir -Destination (Join-Path $PublishDir $appName) -Force
+Move-Item -Path $appDir -Destination $MatrixAppPath -Force
