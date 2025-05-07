@@ -24,12 +24,12 @@ param(
     [string]$SpokenName,
 
     [Parameter(Mandatory=$true)]
-    [string]$BundleIdentifier
+    [string]$BundleIdentifier,
     
     [Parameter(Mandatory=$true)]
-    [string]$publishDir
+    [string]$publishDir,
 
-    [string]$StagingDir = "app-bundle-staging",
+    [string]$StagingDir = "app-bundle-staging"
 )
 
 # Setup paths
