@@ -43,11 +43,13 @@ $macosDir = Join-Path $contentsDir "MacOS"
 $resourcesDir = Join-Path $contentsDir "Resources"
 
 # Create the macOS .app bundle directory structure
-New-Item -ItemType Directory -Path $macosDir -Force
 New-Item -ItemType Directory -Path $resourcesDir -Force
 
 # Copy icon into the .app's Resources folder
 Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
+
+# Copy all built application files into the .app's MacOS directory
+Move-Item -Path $publishDir -Destination $macosDir -Force
 
 # Generate Info.plist metadata file with app information
 $plistContent = @"
@@ -84,11 +86,6 @@ $plistContent = @"
 "@
 
 Set-Content -Path (Join-Path $contentsDir "Info.plist") -Value $plistContent
-
-# Copy all built application files into the .app's MacOS directory
-Get-ChildItem -Path $publishDir | ForEach-Object {
-    Move-Item -Path $_.FullName -Destination $macosDir -Force
-}
 
 # Move the final .app bundle into the publish directory for upload
 Move-Item -Path $appDir -Destination $publishDir -Force
