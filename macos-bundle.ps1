@@ -26,7 +26,7 @@ param(
     [string]$SpokenName,
 
     [Parameter(Mandatory=$true)]
-    [string]$BundleIdentifier,
+    [string]$BundleIdentifier
 )
 
 # Setup paths
