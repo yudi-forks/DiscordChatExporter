@@ -18,40 +18,23 @@ param(
     [string]$GitHubRefType,
     
     [Parameter(Mandatory=$true)]
-    [string]$GitHubRefName,
-
-    [Parameter(Mandatory=$true)]
-    [string]$BundleIdentifier,
-
-    [Parameter(Mandatory=$true)]
-    [string]$SpokenName,
-
-    [Parameter(Mandatory=$true)]
-    [string]$Copyright,
-
-    [Parameter(Mandatory=$true)]
-    [string]$IconPath,
-
-    [string]$StagingDir = "bundle-macos-app-staging"
+    [string]$GitHubRefName
+    
 )
 
 # Setup paths
 $appName = "$MatrixAssetName.app"
-$appDir = Join-Path $StagingDir $appName
+$appDir = Join-Path "bundle-macos-app-staging" $appName
 $contentsDir = Join-Path $appDir "Contents"
 $macosDir = Join-Path $contentsDir "MacOS"
 $resourcesDir = Join-Path $contentsDir "Resources"
 
 # Create the macOS .app bundle directory structure
+New-Item -ItemType Directory -Path $macosDir -Force
 New-Item -ItemType Directory -Path $resourcesDir -Force
 
 # Copy icon into the .app's Resources folder
-Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
-Move-Item -Path $PublishDir -Destination $macosDir -Force
-
-# Copy all built application files into the .app's MacOS directory
-Move-Item -Path $publishDir -Destination $macosDir -Force
-Copy-Item -Path $IconPath -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
+Copy-Item -Path "favicon.icns" -Destination (Join-Path $resourcesDir "AppIcon.icns") -Force
 
 # Generate Info.plist metadata file with app information
 $plistContent = @"
@@ -66,11 +49,11 @@ $plistContent = @"
     <key>CFBundleExecutable</key>
     <string>$MatrixAssetName</string>
     <key>NSHumanReadableCopyright</key>
-    <string>$Copyright</string>
+    <string>© Oleksii Holub</string>
     <key>CFBundleIdentifier</key>
     <string>$BundleIdentifier</string>
     <key>CFBundleSpokenName</key>
-    <string>$SpokenName</string>
+    <string>Discord Chat Exporter</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleIconName</key>
@@ -89,5 +72,10 @@ $plistContent = @"
 
 Set-Content -Path (Join-Path $contentsDir "Info.plist") -Value $plistContent
 
+# Copy all built application files into the .app's MacOS directory
+Get-ChildItem -Path $publishDir | ForEach-Object {
+    Move-Item -Path $_.FullName -Destination $macosDir -Force
+}
+
 # Move the final .app bundle into the publish directory for upload
-Move-Item -Path $appDir -Destination $MatrixAppPath -Force
+Move-Item -Path $appDir -Destination $PublishDir -Force

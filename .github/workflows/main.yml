@@ -139,7 +139,7 @@ jobs:
           --self-contained
 
       - name: Generate macOS .app bundle resources
-        if: matrix.app == 'DiscordChatExporter.Gui' && startsWith(matrix.rid, 'osx-')
+        if: ${{ startsWith(matrix.rid, 'osx-') && matrix.app == 'DiscordChatExporter.Gui' }}
         shell: pwsh
         run: >
           ./bundle-macos-app.ps1
@@ -150,10 +150,7 @@ jobs:
           -GitHubSha "${{ github.sha }}"
           -GitHubRefType "${{ github.ref_type }}"
           -GitHubRefName "${{ github.ref_name }}"
-          -BundleIdentifier "com.Tyrrrz.${{ matrix.asset }}"
-          -SpokenName "Discord Chat Exporter"
-          -Copyright "© Oleksii Holub"
-          -IconPath "favicon.icns"
+          -BundleIdentifier "me.Tyrrrz.${{ matrix.asset }}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -196,13 +193,13 @@ jobs:
           - DiscordChatExporter.Cli
           - DiscordChatExporter.Gui
         rid:
-          # - win-arm64
-          # - win-x86
-          # - win-x64
-          # - linux-arm
-          # - linux-arm64
-          # - linux-musl-x64
-          # - linux-x64
+          - win-arm64
+          - win-x86
+          - win-x64
+          - linux-arm
+          - linux-arm64
+          - linux-musl-x64
+          - linux-x64
           - osx-arm64
           - osx-x64
         include:
@@ -229,6 +226,10 @@ jobs:
       - name: Set permissions
         if: ${{ !startsWith(matrix.rid, 'win-') && !(startsWith(matrix.rid, 'osx-') && matrix.app == 'DiscordChatExporter.Gui') }}
         run: chmod +x ${{ matrix.app }}/${{ matrix.asset }}
+
+      - name: Set permissions for macOS .app bundle
+        if: ${{ startsWith(matrix.rid, 'osx-') && matrix.app == 'DiscordChatExporter.Gui' }}
+        run: chmod +x ${{ matrix.app }}/${{ matrix.asset }}.app/Contents/MacOS/${{ matrix.asset }}
 
       - name: Create package
         # Change into the artifacts directory to avoid including the directory itself in the zip archive
