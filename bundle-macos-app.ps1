@@ -18,7 +18,10 @@ param(
     [string]$GitHubRefType,
     
     [Parameter(Mandatory=$true)]
-    [string]$GitHubRefName
+    [string]$GitHubRefName,
+
+    [Parameter(Mandatory=$true)]
+    [string]$BundleIdentifier
     
 )
 
